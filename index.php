@@ -41,5 +41,13 @@ $message ="En attente";
 </p>
 <!-- link a une page externe php     -->
 	<a href="page1.php">page1<a/>
+	
+	<?php
+//test CLI//
+print
+
+("Hello World !"); // Je préfère print, mais echo a aussi souvent la cote :)
+
+?>
 </body>
 </html>
