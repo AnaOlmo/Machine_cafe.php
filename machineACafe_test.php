@@ -20,7 +20,7 @@
 <body>
 
 	<div class="mainContener">
-		<h1>Ma Machine à café en PHP</h1>
+		<h1>Ma Machine à café en PHP 2</h1>
 		
 		<div id="afficheurInfo" class="date">
 			Today is  <?= $date?> <!-- Insertion de la date du jour en php -->
