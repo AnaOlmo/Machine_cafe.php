@@ -20,7 +20,7 @@
 <body>
 
 	<div class="mainContener">
-		<h1>Ma Machine à café en PHP 2</h1>
+		<h1>Ma Machine à café en PHP</h1>
 		
 		<div id="afficheurInfo" class="date">
 			Today is  <?= $date?> <!-- Insertion de la date du jour en php -->
@@ -29,7 +29,7 @@
 	</div>
 
 		<div class="blocInfos">
-			<form method="post" action="machineACafe_test.php">
+			<form method="post" action="machinephp.php">
 				<!-- <input type="text" name="choixBoisson" placeholder="Votre choix de boisson"/> -->
 				<select name="choixBoisson">
 			
@@ -39,21 +39,26 @@
 					}
 					?>
 				</select>
-				<input type="number" min="0" max="5" name="choixSucre" placeholder="Combien de sucres ?"/>
+
+				<p>
+                       
+				<input type="number" min="0" max="5" name="nbSucre" placeholder="Combien de sucres ?"/>
 				<input type="submit" value="Valider"/>
+			</p>
 			</form>
-			<p>
+			
+			
 			<?php
 			 //Teste si la variable existe
-			if (isset($_POST["choixBoisson"]) AND isset($_POST["choixSucre"])) {
-                burnOut($_POST["choixSucre"]);
-				//echo "Vous avez choisi '" . $_POST["choixBoisson"] . "', dont la recette est :<br>";
- 				//echo prepareBoisson($_POST["choixBoisson"], $_POST["choixSucre"]);
+			if (isset($_POST["choixBoisson"]) AND isset($_POST["nbSucre"])) {
+                burnOut($_POST["nbSucre"]);
+				echo "Vous avez choisi '" . $_POST["choixBoisson"] . "', dont la recette est :<br>";
+ 				echo prepareBoisson($_POST["choixBoisson"], $_POST["nbSucre"]);
 			} else {
 				echo $messageAttente;
 			}
 			?>
-			</p>
+			
 		</div>
 
 		<div class="blocInfos">

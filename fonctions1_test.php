@@ -11,24 +11,30 @@ $argentInsere = 0; // Déclaration de la variable $argentInsere qui prend pour v
 
 // Création d'un tableau multidimentionnel avec les recettes
 $boissonsTab = array(
-  "Café Long" => array(
-    "Café" => 2,
+  "Cafe Long" => array(
+    "Cafe" => 2,
     "Eau"  => 2
   ),
   "Expresso" => array(
-    "Café" => 1,
+    "Cafe" => 1,
     "Eau"  => 1
   ),
-  "Thé" => array(
-    "Thé" => 1,
-    "Eau" => 1
-  )
+  "Chocolat" => array(
+    "Cacao" => 2,
+    "Eau" => 3,
+    "Lait" => 2
+  ),
+  "Latte" => array(
+    "Cafe" => 2,
+    "Eau" => 2,
+    "Lait" => 2
+)    
 );
 function prisedeTete(){
 
 try
 {// On se connecte à MySQL//
-	$bdd = new PDO('mysql:host=localhost;dbname=machine_cafe;charset=utf8', 'root', '');
+	$bdd = new PDO('mysql:host=localhost;dbname=machinephp;charset=utf8', 'root', '');
 }
 catch (Exception $e)
 {// En cas d'erreur, on affiche un message et on arrête tout
@@ -42,33 +48,33 @@ catch (Exception $e)
 //$reponse = $bdd->query("SELECT `Ingredients_id`,`Qty`,`Boissons_id` FROM `ingredients_has_boissons` INNER JOIN ingredients ON id = Ingredients_id WHERE `Boissons_id`='LAT'");
 
 function burnOut($nbSucres){
-$bdd=prisedeTete();
-$diabete = '';    
-$req = $bdd->prepare(
+  $bdd=prisedeTete();
+  $diabete = '';    
+  $req = $bdd->prepare(
     " SELECT `Ingredients_id`,`Qty`, `Boissons_id`, `Libelle`
-     FROM `ingredients_has_boissons`
-      INNER JOIN boissons
-       ON id = Boissons_id 
-       WHERE libelle=:nomBoisson ");
+    FROM `ingredients_has_boissons`
+    INNER JOIN boissons
+    ON id = Boissons_id 
+    WHERE libelle=:nomBoisson ");
 
-$req ->execute(array('nomBoisson'=>$_POST['choixBoisson']));
+  $req ->execute(array('nomBoisson'=>$_POST['choixBoisson']));
 
 
 // On affiche chaque entrée une à une
-echo $_POST['choixBoisson'] . ' qui contient ' . "<br>";
+  echo $_POST['choixBoisson'] . ' qui contient ' . "<br>";
 
-   while ($donnees = $req->fetch())
-	{
-		
-		echo  $donnees['Ingredients_id'] . ' x ' . $donnees['Qty'] . "<br>" ;
-		
-    }
-    if ($nbSucres >0) {
-        $diabete = $nbSucres;
-        echo  $diabete. " Sucre(s) " ;
-      } 
-       
-      
+  while ($donnees = $req->fetch())
+  {
+    
+    echo  $donnees['Ingredients_id'] . ' x ' . $donnees['Qty'] . "<br>" ;
+    
+  }
+  if ($nbSucres >0) {
+    $diabete = $nbSucres;
+    echo  $diabete. " Sucre(s) " ;
+  } 
+  
+  
 }
 
 
@@ -105,31 +111,31 @@ function ajouterSucre($recetteTab, $nbSucres) {
 
 
 // Affiche la recette d'UNE SEULE boisson
-function prepare($recette) {
-	$liste = "";
-	foreach($recette as $ingredient => $quantite)
-	{
-    $liste .= $ingredient . " x " . $quantite . "<br/>";	
-  }
-  return $liste;
-}
+// function prepare($recette) {
+// 	$liste = "";
+// 	foreach($recette as $ingredient => $quantite)
+// 	{
+//     $liste .= $ingredient . " x " . $quantite . "<br/>";	
+//   }
+//   return $liste;
+// }
 
-function prepareBoisson($boisson, $nbSucres) {
-  global $boissonsTab;
+// function prepareBoisson($boisson, $nbSucres) {
+//   global $boissonsTab;
 
-  if ($boisson === "Café Long") {
-    $recette = $boissonsTab["Café Long"];
-  } else if ($boisson === "Expresso") {
-    $recette = $boissonsTab["Expresso"];
-  } else if ($boisson === "Thé") {
-    $recette = $boissonsTab["Thé"];
-  }
+//   if ($boisson === "Cafe Long") {
+//     $recette = $boissonsTab["Cafe Long"];
+//   } else if ($boisson === "Expresso") {
+//     $recette = $boissonsTab["Expresso"];
+//   } else if ($boisson === "Chocolat") {
+//     $recette = $boissonsTab["Chocolat"];
+//   }
 
-  if ($nbSucres > 0) {
-    $recette["Sucre"] = $nbSucres;
-  }
+//   if ($nbSucres > 0) {
+//     $recette["Sucre"] = $nbSucres;
+//   }
   
-  return prepare($recette);
-} 
+//  // return prepare($recette);
+// } 
 
 ?>

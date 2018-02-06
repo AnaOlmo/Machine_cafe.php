@@ -1,40 +1,20 @@
 body{
-	background-image: url('../../asset/img/Interface/Vue1.png');
+	background-image: url('C:/Programmes/wamp64/www/machine_cafe/Vue1/coffe beans.jpg');
 	background-repeat: no-repeat;
 	background-position: center top;
+	font-family:"Times New Roman";
+	font-size: 25px;
+}
 
+.button{
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    font-size: 16px;
 }
-.btn-tea{
-	margin-left: 245px;
-	margin-top: 220px;
-}
-.btnMoins{
-	margin-left: 845px;
-	margin-top: -189px;
-}
-.btnPlus{
-	margin-left: 889px;
-	margin-top: -229px;
-}
-.btn-chocolat{
-	margin-left: 230px;
-	margin-top: -35px;
-}
-.btn-latte{
-	margin-left: 230px;
-	margin-top: 5px;
-}
-.btn-expresso{
-	margin-left: 230px;
-	margin-top: 5px;
-}
-.sugar1, .sugar2,.sugar3, .sugar4, .sugar5{
-	opacity: 0;
-}
-.nbsugar{
-	margin-left: 980px;
-	margin-top: -670px;
-}
-.btn-cancel{
-	color:red;
+
+head{
+	color: darkblue;
+	font-family:"Times New Roman";
+	 font-size: 25px;
 }
