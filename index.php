@@ -35,7 +35,7 @@
 			
 					<?php
 					foreach ($boissonsTab as $boisson => $recette) {
-						echo "<option>" . $boisson . "</option>";
+							echo "<option>" . $boisson . "</option>";	
 					}
 					?>
 				</select>
@@ -51,7 +51,7 @@
 			<?php
 			 //Teste si la variable existe
 			if (isset($_POST["choixBoisson"]) AND isset($_POST["nbSucre"])) {
-                burnOut($_POST["nbSucre"]);
+                afficherRecette($_POST["nbSucre"], $_POST["choixBoisson"]);
 				
  				//echo prepareBoisson($_POST["choixBoisson"], $_POST["nbSucre"]);
 			} else {

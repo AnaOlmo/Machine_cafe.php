@@ -13,11 +13,12 @@ $argentInsere = 0; // Déclaration de la variable $argentInsere qui prend pour v
 $boissonsTab = array(
   "Cafe Long" => array(
     "Cafe" => 2,
-    "Eau"  => 2
+    "Eau" => 2
+  
   ),
   "Expresso" => array(
     "Cafe" => 1,
-    "Eau"  => 1
+    "Eau" => 1
   ),
   "Chocolat" => array(
     "Cacao" => 2,
@@ -28,56 +29,114 @@ $boissonsTab = array(
     "Cafe" => 2,
     "Eau" => 2,
     "Lait" => 2
-)    
+  ),    
+  "The" => array(
+    "The" => 2,
+    "Eau" => 3
+   
+  ),
+  "Mocca" => array(
+    "Cafe" => 2,
+    "Eau" => 3,
+    "Cacao" => 2
+   
+  ),        
 );
-function prisedeTete(){
+function connectBdd(){
 
-try
-{// On se connecte à MySQL//
-	$bdd = new PDO('mysql:host=localhost;dbname=machinephp;charset=utf8', 'root', '');
-}
-catch (Exception $e)
-{// En cas d'erreur, on affiche un message et on arrête tout
-        
-        die('Erreur : ' . $e->getMessage());
-}return $bdd;
+  try
+  {// On se connecte à MySQL//
+  	$bdd = new PDO('mysql:host=localhost;dbname=machine_php;charset=utf8', 'root', '');
+  }
+  catch (Exception $e)
+  {// En cas d'erreur, on affiche un message et on arrête tout
+          
+          die('Erreur : ' . $e->getMessage());
+  }
+  return $bdd;
 }
 // Si tout va bien, on peut continuer
 
 // On récupère tout le contenu de la table Machine_cafe
 //$reponse = $bdd->query("SELECT `Ingredients_id`,`Qty`,`Boissons_id` FROM `ingredients_has_boissons` INNER JOIN ingredients ON id = Ingredients_id WHERE `Boissons_id`='LAT'");
 
-function burnOut($nbSucres){
-  $bdd=prisedeTete();
-  $diabete = '';    
+function afficherRecette($nbSucres,$choixBoisson){
+  global $boissonsTab;
+  $bdd=connectBdd();
+  $sugar = '';  
+  $liste = ""; 
   $req = $bdd->prepare(
-    " SELECT `Ingredients_id`,`Qty`, `Boissons_id`, `Libelle`
+    " SELECT `ingredients_id`,`Qty`, `Boissons_id`, `Libelle`, `Nom`
     FROM `ingredients_has_boissons`
-    INNER JOIN boissons
-    ON id = Boissons_id 
-    WHERE libelle=:nomBoisson ");
+    INNER JOIN boissons 
+    ON boissons.id = Boissons_id
+    INNER JOIN ingredients
+    ON ingredients.id = Ingredients_id
+    WHERE Libelle=:nomBoisson" );
 
-  $req ->execute(array('nomBoisson'=>$_POST['choixBoisson']));
-
+  $req ->execute(array('nomBoisson'=>$choixBoisson));
+  
 
 // On affiche chaque entrée une à une
-  echo $_POST['choixBoisson'] . ' qui contient ' . "<br>";
+  echo $choixBoisson . ' qui contient ' . "<br>";
 
   while ($donnees = $req->fetch())
   {
     
-    echo  $donnees['Ingredients_id'] . ' x ' . $donnees['Qty'] . "<br>" ;
+    echo  $donnees['Nom'] . ' x ' . $donnees['Qty'] . "<br>" ;
     
   }
   if ($nbSucres >0) {
-    $diabete = $nbSucres;
-    echo  $diabete. " Sucre(s) " ;
+    $sugar = $nbSucres;
+    echo  $sugar. " Sucre(s) " ;
   } 
+
+
+  echo "<br><br> ** Affichage avec le tableau : <br>";
   
+  // Code affichage avec le tableau
+
+//afficher nom boisson selectionee//
+  echo  $choixBoisson . ' qui contient ' . "<br>";
+//je parcours le tableau boisson jusqu'a la boisson selectionnee//
+  foreach ($boissonsTab as $boisson => $recette) {
+//si boisson ok//    
+    if ($boisson === $choixBoisson){
+//je parcours les ingredients//      
+      foreach ($recette as $ingredients => $ing){
+        echo   $ingredients . ' x ' . $ing . "<br>";//afficher ingredients et quantite//
+      } 
+    }
+  }
+//si nb sucre superieur a zero, j'affiche//  
+  if ($nbSucres >0) {
+    $sugar = $nbSucres;
+    echo  $sugar. ' Sucre(s)' . "<br>" ;
+  }        
+
+  echo " ** Fin affichage avec le tableau <br><br><br>";   
+
+
+
+  echo "<br><br> ** Affichage avec le tableau  plus simple: <br>";
   
+  // Code affichage avec le tableau
+
+  echo  $choixBoisson . ' qui contient ' . "<br>";
+
+  
+//($boissonsTab[$choixboisson]) equivaut a $recette et permet d'acceder au tableau d'ingredients directement//   
+  foreach ($boissonsTab[$choixBoisson] as $ingredients => $quantite){
+    echo   $ingredients . ' x ' . $quantite . "<br>";
+  } 
+  if ($nbSucres >0) {
+    $sugar = $nbSucres;
+    echo  $sugar. ' Sucre(s)' . "<br>" ;
+  }  
+   
+  echo " ** Fin affichage avec le tableau  plus simple<br><br><br>"; 
 }
-
-
+ 
 
 //echo "LAT" . "<br>";
 //	while ($donnees = $reponse->fetch())
@@ -104,10 +163,6 @@ function ajouterSucre($recetteTab, $nbSucres) {
 
   return $recetteTab;
 }
-
-
-
-
 
 
 // Affiche la recette d'UNE SEULE boisson
