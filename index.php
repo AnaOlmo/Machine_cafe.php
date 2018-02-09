@@ -34,9 +34,11 @@
 				<select name="choixBoisson">
 			
 					<?php
-					foreach ($boissonsTab as $boisson => $recette) {
-							echo "<option>" . $boisson . "</option>";	
-					}
+					//foreach ($boissonsTab as $boisson => $recette) {
+							//echo "<option>" . $boisson . "</option>";	
+
+					echo formulaireBoisson();
+					//}
 					?>
 				</select>
 
@@ -61,6 +63,16 @@
 			
 		</div>
 
+		<div class="row">
+			<div class="col-sm-offset-3 col-sm-6">
+				<!--Afficher la recette de la boisson si le formulaire a été complété ou un message d'attente -->		
+				<?php 
+					ajouterVente();
+					
+					updateStock(); //update stock dans la BDD	
+				?>
+			</div>
+		</div>
 		<div class="blocInfos">
 			Solde = 
 			<?= $argentInsere ?> <!-- Insertion de l'argent inséré en php -->

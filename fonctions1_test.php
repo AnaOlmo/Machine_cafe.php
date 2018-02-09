@@ -8,7 +8,7 @@ $minutes  = date("i"); // Déclaration d'une variable $minutes qui prend pour va
 // $boissons = array("Thé Menthe","Chocolat","Café","Expresso"); // Déclaration d'une variable $boissons qui prend pour valeur la fonction tableau comprenant les paramètres des 4 boissons
 $messageAttente = "Vous voulez un café ou bien ?"; // Déclaration d'un variable $messageAttente qui prend pour valeur la chaine de caractères du message d'attente
 $argentInsere = 0; // Déclaration de la variable $argentInsere qui prend pour valeur 0
-
+//$bdd = new PDO('mysql:host=localhost;dbname=machine_php;charset=utf8', 'root', '');
 // Création d'un tableau multidimentionnel avec les recettes
 $boissonsTab = array(
   "Cafe Long" => array(
@@ -30,12 +30,12 @@ $boissonsTab = array(
     "Eau" => 2,
     "Lait" => 2
   ),    
-  "The" => array(
+  "Thé" => array(
     "The" => 2,
     "Eau" => 3
    
   ),
-  "Mocca" => array(
+  "Moccha" => array(
     "Cafe" => 2,
     "Eau" => 3,
     "Cacao" => 2
@@ -72,17 +72,18 @@ function afficherRecette($nbSucres,$choixBoisson){
     ON boissons.id = Boissons_id
     INNER JOIN ingredients
     ON ingredients.id = Ingredients_id
-    WHERE Libelle=:nomBoisson" );
+    WHERE boissons.id=:idBoisson" );
 
-  $req ->execute(array('nomBoisson'=>$choixBoisson));
+  $req ->execute(array('idBoisson'=>$choixBoisson));
   
 
 // On affiche chaque entrée une à une
-  echo $choixBoisson . ' qui contient ' . "<br>";
+  echo "votre Boisson qui contient " . "<br>";
+  $nomBoisson='';
 
   while ($donnees = $req->fetch())
   {
-    
+    $nomBoisson=$donnees['Libelle'];
     echo  $donnees['Nom'] . ' x ' . $donnees['Qty'] . "<br>" ;
     
   }
@@ -97,11 +98,11 @@ function afficherRecette($nbSucres,$choixBoisson){
   // Code affichage avec le tableau
 
 //afficher nom boisson selectionee//
-  echo  $choixBoisson . ' qui contient ' . "<br>";
+  echo  $nomBoisson . ' qui contient ' . "<br>";
 //je parcours le tableau boisson jusqu'a la boisson selectionnee//
   foreach ($boissonsTab as $boisson => $recette) {
 //si boisson ok//    
-    if ($boisson === $choixBoisson){
+    if ($boisson === $nomBoisson){
 //je parcours les ingredients//      
       foreach ($recette as $ingredients => $ing){
         echo   $ingredients . ' x ' . $ing . "<br>";//afficher ingredients et quantite//
@@ -122,11 +123,11 @@ function afficherRecette($nbSucres,$choixBoisson){
   
   // Code affichage avec le tableau
 
-  echo  $choixBoisson . ' qui contient ' . "<br>";
+  echo  $nomBoisson . ' qui contient ' . "<br>";
 
   
 //($boissonsTab[$choixboisson]) equivaut a $recette et permet d'acceder au tableau d'ingredients directement//   
-  foreach ($boissonsTab[$choixBoisson] as $ingredients => $quantite){
+  foreach ($boissonsTab[$nomBoisson] as $ingredients => $quantite){
     echo   $ingredients . ' x ' . $quantite . "<br>";
   } 
   if ($nbSucres >0) {
@@ -168,14 +169,14 @@ function ajouterSucre($recetteTab, $nbSucres) {
 // Affiche la recette d'UNE SEULE boisson
 // function prepare($recette) {
 // 	$liste = "";
-// 	foreach($recette as $ingredient => $quantite)
-// 	{
-//     $liste .= $ingredient . " x " . $quantite . "<br/>";	
+// 	foreach($recette as $ingredient => $quantite){
+// 	
+//    $liste .= $ingredient . " x " . $quantite . "<br/>";	
 //   }
 //   return $liste;
 // }
 
-// function prepareBoisson($boisson, $nbSucres) {
+// function prepareBoisson($boisson, $nbSucres){
 //   global $boissonsTab;
 
 //   if ($boisson === "Cafe Long") {
@@ -192,5 +193,73 @@ function ajouterSucre($recetteTab, $nbSucres) {
   
 //  // return prepare($recette);
 // } 
+//$choixBoisson,$nbSucres
+//Fonction permettant d'ajouter une vente dans la BDD suite à une commande
+    function ajouterVente(){
+        $bdd=connectBdd();
+        
+        /*Récupérer la date de la BDD
+        $requetes = $bdd->prepare('SELECT now() as "DateJour"');
+        while ($donnees = $requetes->fetch()) {
+          $date= $donnees["DateJour"];
+        }*/
+        
+        if (isset($_POST['choixBoisson']) AND isset($_POST['nbSucre'])) {
+            $sugar = $_POST['nbSucre'];
+            $boisson = $_POST['choixBoisson'];
+            $requete = $bdd->prepare('INSERT INTO vente (date_heure,Sucre, Boissons_id) 
+                                      VALUES (now(),?,?)');
+            $requete->execute(array($sugar, $boisson));
+        }
+            //$requetes->closeCursor();
+    }
+
+    //Fonction pour déduire du stock la quantité de sucre utilisée dans la commande
+    function updateStock(){
+      $bdd=connectBdd();
+      if (isset($_POST['choixBoisson']) AND isset($_POST['nbSucre'])) 
+      {
+        $sugar = $_POST['nbSucre'];
+        $requete= $bdd->prepare('UPDATE ingredients
+                  SET Qty_Stock = Qty_Stock - ?
+                  WHERE id = "SUC"');
+          $requete->execute(array($sugar));
+      }
+    }
+
+/*function makeAnOrder($data, $codeBoisson, $sucres) {
+        $addCommand = $data->prepare("INSERT INTO sales (drinks_code, id, sugar, date) VALUES ( ?, NULL, ?, NOW());");
+        $addCommand->execute(array($codeBoisson, $sucres));
+        $addCommand->closeCursor();
+    }
+    function decrementStock($data, $drinkRecipe, $sugar) {
+        $decrementIngredients = $data->prepare('UPDATE ingredients SET quantity = quantity - ? WHERE ingredients.id = ? ;');
+        
+        foreach($drinkRecipe as $ing) {
+            $decrementIngredients->execute(array($ing['recipeqty'], $ing['ingredients_id']));
+        }
+        if($sugar > 0) {
+            $decrementIngredients->execute(array($sugar, 6));
+        }
+        $decrementIngredients->closeCursor();
+    }*/
+
+function formulaireBoisson(){
+  //je cree le lien avec ma bdd
+  $bdd=connectBdd();
+  //variable monformulaire contient resultat fonction
+  $monFormulaire= "";
+  //je recupere dans ma bdd les infos sur boissons
+  $req=$bdd->query('SELECT id, Libelle 
+    FROM boissons');
+  //req Fetch me creer le tableau $mes Boissons contenant le résultat de ma requete
+  while ($mesBoissons = $req->fetch()) 
+  {
+    //constituer formulaire
+    $monFormulaire=$monFormulaire . '<option value="'. $mesBoissons["id"].'" > '. $mesBoissons["Libelle"] .'</option>';
+  } 
+  return $monFormulaire;
+
+}
 
 ?>
